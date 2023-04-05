@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot;
 
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -30,10 +34,16 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     m_robotContainer.initDashboard();
     SmartDashboard.putBoolean("Get Cube", true);
-    SmartDashboard.putBoolean("Lights On", true);
     SmartDashboard.putBoolean("Use AutoBalance", false);
   }
 
+  /**
+   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * that you want ran during disabled, autonomous, teleoperated and test.
+   *
+   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * SmartDashboard integrated updating.
+   */
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
@@ -75,27 +85,24 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if (SmartDashboard.getBoolean("Lights On", true)) {
-      if (SmartDashboard.getBoolean("Get Cube", true)) {
+    if (m_robotContainer.m_controller2.getLeftTriggerAxis() > 0.05) {
+      SmartDashboard.putBoolean("Get Cube", true);
 
-        for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
-          m_LEDBuffer.setRGB(i, 0, 255, 255);
-        }
-        m_LEDLight.setData(m_LEDBuffer);
-        m_LEDLight.start();
-      } else {
-        for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
-          m_LEDBuffer.setRGB(i, 170, 255, 0);
-        }
-        m_LEDLight.setData(m_LEDBuffer);
-        m_LEDLight.start();
+      for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
+        m_LEDBuffer.setRGB(i, 0, 255, 255);
       }
-    } else {
-        for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
-          m_LEDBuffer.setRGB(i, 0, 0, 0);
-        }
-        m_LEDLight.setData(m_LEDBuffer);
-        m_LEDLight.start();
+
+      m_LEDLight.setData(m_LEDBuffer);
+      m_LEDLight.start();
+
+    } else if (m_robotContainer.m_controller2.getRightTriggerAxis() > 0.05) {
+      SmartDashboard.putBoolean("Get Cube", false);
+
+      for (var i = 0; i < m_LEDBuffer.getLength(); i++) {
+        m_LEDBuffer.setRGB(i, 170, 255, 0);
+      }
+      m_LEDLight.setData(m_LEDBuffer);
+      m_LEDLight.start();
     }
   }
 
